@@ -8,7 +8,10 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 data = pd.read_csv('raw_data.csv')
+# Supprime les 3 premières colonnes ["Horodateur", "Nom d'utilisateur", "Mentions légales"]
 data = data.drop(columns=data.columns[:3])
+# Supprime les dernières colonnes qui concerne les avis sur le futur developpement de l'application
+data = data.drop(columns=data.columns[20:])
 
 def data_clean(data):
     text_cols = data.select_dtypes(include=['object']).columns
