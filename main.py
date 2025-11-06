@@ -38,8 +38,8 @@ def data_clean(data):
 
     data.iloc[:, 8] = data.iloc[:, 8].replace(mapping)
 
-    data.to_csv('main.csv', index=False)
-    print("main.csv successfully created ✅")
+    data.to_csv('cleaned_data.csv', index=False)
+    print("cleaned_data.csv successfully created ✅")
     return data
 
 data_clean(data)
