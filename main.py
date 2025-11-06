@@ -19,8 +19,22 @@ def data_clean(data):
         # Remplace "mot / mot" par "mot;mot" dans toutes les colonnes texte
         data[col] = data[col].str.replace(r'\s*/\s*', ';', regex=True)
         data[col] = data[col].str.strip()
-        
-    data.to_csv('cleaned_data.csv', index=False)
+
+    data = data.fillna("null")
+    data = data.replace("blank", "null")
+
+    mapping = {
+        1: 60,
+        2: 90,
+        3: 120,
+        4: 150,
+        5: 180
+    }
+
+    data.iloc[:, 8] = data.iloc[:, 8].replace(mapping)
+
+    data.to_csv('main.csv', index=False)
+    print("main.csv successfully created ✅")
     return data
 
 data_clean(data)
