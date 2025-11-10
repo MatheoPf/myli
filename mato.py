@@ -18,6 +18,8 @@ def data_clean(data):
     # Renommage des colonnes
     new_cols = ["musique intrumentale ou avec parole", "support écouté", "station radio", "genre musicale", "période musicale", "langue écouté", "type de parole", "frequence ecouté artiste émergent", "tempo", "fréquence en travaillant", "fréquence en sport", "fréquence en cuisine", "fréquence en transport", "fréquence en passant le temps", "fréquence écoute mensuel", "fréquence écoute journalier", "genre", "age", "environnement", "situation professionnel"]
     data.columns = new_cols
+    data = data.fillna("null")
+    data = data.replace("blank", "null")
     text_cols = data.select_dtypes(include=['object']).columns
     
     for col in text_cols:
@@ -32,9 +34,6 @@ def data_clean(data):
                 if (entry != "Femme") and (entry != "Homme") and (entry.lower() != "non binaire") and (entry!= "Je préfère ne pas répondre"):
                     new_entry = "Je préfère ne pas répondre"
                     data[col] = data[col].replace(entry, new_entry)
-                        
-    data = data.fillna("null")
-    data = data.replace("blank", "null")
 
     mapping = {
         1: 60,
