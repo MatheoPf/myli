@@ -27,7 +27,6 @@ def data_clean(data):
         data[col] = data[col].str.strip()
         data[col] = data[col].str.replace(r'\s* ; \s*', ';', regex=True)
         data[col] = data[col].str.replace(r'\s* \( \s*', '(', regex=True)
-        #data[col] = data[col].str.replace(r'\s* \s*', '_', regex=True)
         
         # Vérification des valeurs dans la colonne "genre"
         if col == "genre":
@@ -43,6 +42,12 @@ def data_clean(data):
 
     data = data.map(lambda x: x.lower() if isinstance(x, str) else x)
 
+    # ✅ AGE → numérique + moyenne
+    data["age"] = pd.to_numeric(data["age"], errors="coerce")
+    mean_age = data["age"].mean()
+    data["age"] = data["age"].fillna(mean_age)
+
+    # Mapping tempo : valeurs 1–5 → BPM
     mapping_bpm = {
         1: 60,
         2: 90,
@@ -52,6 +57,10 @@ def data_clean(data):
     }
 
     data.iloc[:, 8] = data.iloc[:, 8].replace(mapping_bpm)
+
+    data["tempo"] = pd.to_numeric(data["tempo"], errors="coerce")
+    mean_tempo = data["tempo"].mean()
+    data["tempo"] = data["tempo"].fillna(mean_tempo)
 
     mapping_freq_mensuelle = {
         "plus d'une fois par jour": 1,
@@ -72,6 +81,9 @@ def data_clean(data):
 
     data.to_csv('cleaned_data.csv', index=False)
     print("cleaned_data.csv successfully created ✅")
+    print(f"Moyenne âge = {mean_age}.3f")
+    print(f"Moyenne tempo = {mean_tempo}.3f")
+
     return data
 
 data_clean(data)
