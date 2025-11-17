@@ -63,26 +63,26 @@ def data_clean(data):
     data["tempo"] = data["tempo"].fillna(mean_tempo)
 
     mapping_freq_mensuelle = {
-        "plus d'une fois par jour": 1,
-        "plus d'une fois par semaine": 2,
-        "plus d'une fois par mois": 3,
-        "moins d'une fois par mois": 4,
+        "plus d'une fois par jour": 4,
+        "plus d'une fois par semaine": 3,
+        "plus d'une fois par mois": 2,
+        "moins d'une fois par mois": 1,
     }
 
     data.iloc[:, 14] = data.iloc[:, 14].replace(mapping_freq_mensuelle)
 
     mapping_freq_jour = {
-        "plus de trois heures par jour": 1,
+        "plus de trois heures par jour": 3,
         "plus d'une heure par jour": 2,
-        "moins d'une heure par jour": 3,
+        "moins d'une heure par jour": 1,
     }
 
     data.iloc[:, 15] = data.iloc[:, 15].replace(mapping_freq_jour)
 
     data.to_csv('cleaned_data.csv', index=False)
     print("cleaned_data.csv successfully created ✅")
-    print(f"Moyenne âge = {mean_age}.3f")
-    print(f"Moyenne tempo = {mean_tempo}.3f")
+    print(f"Moyenne âge = {mean_age}")
+    print(f"Moyenne tempo = {mean_tempo}")
 
     return data
 
