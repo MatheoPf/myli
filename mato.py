@@ -14,9 +14,8 @@ data = data.drop(columns=data.columns[:3])
 data = data.drop(columns=data.columns[20:])
 
 def data_clean(data):
-    femme, homme = 0, 0
     # Renommage des colonnes en anglais et simplification des noms
-    new_cols = ["instrumental or vocal music", "platform listening", "radio station", "music style", "musical period", "language listening", "type of singing", "frequency listened to emerging artist", "tempo", "frequency when working", "frequency during exercise", "frequency while cooking", "frequency while driving", "frequency when passing the time", "monthly listening frequency", "daily listening frequency", "gender", "age", "environment", "professional situation"]
+    new_cols = ["instrumental or vocal music", "platform listening", "radio station", "music style", "musical period", "language listening", "type of singing", "frequency listening of emerging artist", "tempo", "frequency during working", "frequency during exercise", "frequency during cooking", "frequency during driving", "frequency for passing the time", "monthly listening frequency", "daily listening frequency", "gender", "age", "environment", "professional situation"]
     data.columns = new_cols
     text_cols = data.select_dtypes(include=['object']).columns
     
