@@ -24,7 +24,7 @@ data = data.drop(columns=data.columns[20:])
 def data_clean(data):
 
     # -------------------------------------------------------------
-    # 1) Renommage des colonnes (base = version la plus complète)
+    # Renommage des colonnes (base = version la plus complète)
     # -------------------------------------------------------------
     new_cols = [
         "musique intrumentale ou avec parole",
@@ -51,7 +51,7 @@ def data_clean(data):
     data.columns = new_cols
 
     # -------------------------------------------------------------
-    # 2) Nettoyage global des colonnes texte
+    # Nettoyage global des colonnes texte
     # -------------------------------------------------------------
     text_cols = data.select_dtypes(include=['object']).columns
 
@@ -141,36 +141,8 @@ def data_clean(data):
             }
             data[col] = data[col].map(lambda x: mapping.get(x, "je préfère ne pas répondre"))
 
-   # ======================================================
-    # 3) NORMALISATION DES GENRES “TECHNO”
     # ======================================================
-    techno_variants = [
-        "techno", "tekno", "teknò", "tecno", "hardtechno", "hardtech",
-        "hardteck", "uptempo", "hardstyle", "hard style", "rawstyle",
-        "industrial techno", "des gros kicks sa mere", "hxc"
-    ]
-
-    def simplify_genre(genre):
-        if not isinstance(genre, str):
-            return np.nan
-        genre = genre.strip().replace(",", ";").replace("/", ";")
-        parts = [g.strip() for g in genre.split(";")]
-        new_parts = []
-        for g in parts:
-            if any(t in g for t in techno_variants):
-                new_parts.append("techno")
-            else:
-                new_parts.append(g)
-        # nettoyer doublons + vides
-        new_parts = [g for g in new_parts if g not in ["", None]]
-        new_parts = list(dict.fromkeys(new_parts))
-        return ";".join(new_parts) if new_parts else np.nan
-
-    data["genre musicale"] = data["genre musicale"].apply(simplify_genre)
-
-
-    # ======================================================
-    # 4) SUPPRESSION PARTIELLE DES GENRES ABSURDES
+    # SUPPRESSION PARTIELLE DES GENRES ABSURDES
     # ======================================================
     motifs_a_supprimer = [
         "je ne peux pas me satisfaire",
@@ -204,28 +176,27 @@ def data_clean(data):
     data["genre musicale"] = data["genre musicale"].apply(clean_absurd_genres)
     data["genre musicale"] = data["genre musicale"].replace(r'^\s*$', np.nan, regex=True)
 
-
     # ======================================================
-    # 5) FUSION / NORMALISATION DES GENRES
+    # FUSION / NORMALISATION DES GENRES
     # ======================================================
     def normalize_genre(g):
         if not isinstance(g, str):
             return None
         g = g.lower().strip()
 
-        # Pop regroupée
+        # pop
         if g in ["k-pop", "j-pop", "dream pop"]:
             return "pop"
 
-        # Variété française
+        # variété française
         if g in ["variété française", "variete française", "chanson française à texte", "chanson francaise"]:
             return "french variety"
 
-        # Métal / Metal
+        # metal
         if "metal" in g or "métal" in g:
             return "metal"
 
-        # Rock & dérivés
+        # rock
         if g in [
             "hard rock", "rock prog", "indie rock", "alt rock",
             "rock progressif", "rock'n'roll", "rock n roll", "rock and roll",
@@ -233,13 +204,21 @@ def data_clean(data):
         ] or g.startswith("rock"):
             return "rock"
 
-        # Electro variations
+        # electro
         if g in [
             "electro chill et populaires", "electro populaire", "electrique",
             "drum and bass", "breakcore", "dubstep", "chiptune", "dance",
             "vocaloid", "house"
         ]:
             return "electro"
+        
+        # techno
+        if g in [
+            "techno", "tekno", "teknò", "tecno", "hardtechno", "hardtech",
+            "hardteck", "uptempo", "hardstyle", "hard style", "rawstyle",
+            "industrial techno", "des gros kicks sa mere", "hxc"
+        ]:
+            return "techno"
         
         # rap
         if g in ["r&b", "hip-hop"]:
@@ -261,11 +240,11 @@ def data_clean(data):
         if g in ["indépendant divers", "éclectique"]:
             return "eclectic"
 
-        # Aucun → pas de préférences
+        # pas de préférences
         if g in ["aucun préféré", "aucun", "aucun preference", "aucune idée", "pas de préférences"]:
             return "no preferences"
 
-        # Musique classique
+        # musique classique
         if g == "musique classique":
             return "classical music"
 
@@ -283,7 +262,6 @@ def data_clean(data):
             if ng:
                 normalized.append(ng)
 
-        # Enlever doublons
         normalized = list(dict.fromkeys(normalized))
         return ";".join(normalized) if normalized else np.nan
 
@@ -291,7 +269,7 @@ def data_clean(data):
 
 
     # -------------------------------------------------------------
-    # 6) Mappings numériques
+    # Mappings numériques
     # -------------------------------------------------------------
     tempo_map = {1: 60, 2: 90, 3: 120, 4: 150, 5: 180}
     data["tempo"] = data["tempo"].replace(tempo_map)
@@ -312,19 +290,17 @@ def data_clean(data):
     data["fréquence écoute journalier"] = data["fréquence écoute journalier"].replace(freq_jour)
 
     # -------------------------------------------------------------
-    # 7) AGE → numérique + imputation moyenne
+    # AGE → numérique + imputation moyenne
     # -------------------------------------------------------------
     data["age"] = pd.to_numeric(data["age"], errors="coerce")
     data["age"] = data["age"].fillna(data["age"].mean())
 
     # -------------------------------------------------------------
-    # 8) EXPORT
+    # EXPORT
     # -------------------------------------------------------------
     data.to_csv('cleaned_data.csv', index=False)
     print("cleaned_data.csv created successfully ✅")
 
     return data
 
-
-# Lancement
 cleaned = data_clean(data)
