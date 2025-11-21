@@ -343,7 +343,7 @@ def data_clean(data):
         if g in [
             "techno", "tekno", "teknò", "tecno", "hardtechno", "hardtech",
             "hardteck", "uptempo", "hardstyle", "hard style", "rawstyle",
-            "industrial techno", "des gros kicks sa mere", "hxc"
+            "industrial techno", "des gros kicks sa mere", "hxc", "tech(uptempo"
         ]:
             return "techno"
         
