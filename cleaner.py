@@ -6,12 +6,17 @@ import re
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-data = pd.read_csv('raw_data.csv')
+# --------- Code de base ---------
+# data = pd.read_csv('raw_data.csv')
 # Supprime les 3 premières colonnes ["Horodateur", "Nom d'utilisateur", "Mentions légales"]
-data = data.drop(columns=data.columns[:3])
+# data = data.drop(columns=data.columns[:3])
 # Supprime les colonnes concernant les avis (après la 20ᵉ)
-data = data.drop(columns=data.columns[20:])
+# data = data.drop(columns=data.columns[20:])
+# ---------------------------------
 
+# --------- Code améliorer avec Mistral AI ---------
+data = pd.read_csv('raw_data.csv', usecols=range(3, 23))
+# -----------------------------------------------------
 
 def data_clean(data):
     # -------------------------------------------------------------
@@ -29,13 +34,25 @@ def data_clean(data):
         # ---------------------------------------------------------
         # Remplace "mot / mot" par "mot;mot" dans toutes les colonnes texte
         # ---------------------------------------------------------
-        data[col] = data[col].str.replace(r'\s*/\s*', ';', regex=True)
-        data[col] = data[col].str.replace(r'\s*,\s*', ';', regex=True)
-        data[col] = data[col].str.replace(r'\s* ; \s*', ';', regex=True)
-        data[col] = data[col].str.replace(r'\s* \( \s*', '(', regex=True)
-        data[col] = data[col].str.replace(r'\s* \) \s*', ')', regex=True)
-        data[col] = data[col].str.strip()
-        data[col] = data[col].str.lower()
+        
+        # --------- Code de base ---------
+        # data[col] = data[col].str.replace(r'\s*/\s*', ';', regex=True)
+        # data[col] = data[col].str.replace(r'\s*,\s*', ';', regex=True)
+        # data[col] = data[col].str.replace(r'\s* ; \s*', ';', regex=True)
+        # data[col] = data[col].str.replace(r'\s* \( \s*', '(', regex=True)
+        # data[col] = data[col].str.replace(r'\s* \) \s*', ')', regex=True)
+        # data[col] = data[col].str.strip()
+        # data[col] = data[col].str.lower()
+        # -----------------------------------------
+        
+        # --------- Code améliorer avec Mistral AI ---------
+        data[col] = data[col].str.replace(r'\s*[\/,;]\s*', ';', regex=True)
+        data[col] = data[col].str.replace(r'\s*\(\s*', '(', regex=True) \
+                        .str.replace(r'\s*\)\s*', ')', regex=True)
+                        
+        text_cols = data.select_dtypes(include='object').columns
+        data[text_cols] = data[text_cols].apply(lambda col: col.str.strip().str.lower())
+        # -----------------------------------------------------
         
         # ---------------------------------------------------------
         # Vérification des valeurs dans la colonne "genre"
@@ -51,6 +68,7 @@ def data_clean(data):
         # ---------------------------------------------------------
         # Traductions des réponses en anglais
         # ---------------------------------------------------------
+
         series = data[col].astype(str).str.strip().str.lower()
                 
         if col == "instrumental or vocal music":
@@ -146,7 +164,7 @@ def data_clean(data):
 
     data["platform listening"] = data["platform listening"].apply(apply_platform_normalization)
     
-        # -------------------------------------------------------------
+    # -------------------------------------------------------------
     # Normalisation des langues d'écoutes
     # -------------------------------------------------------------
     def normalize_language(g):
@@ -415,7 +433,7 @@ def data_clean(data):
         "plus d'une heure par jour": 2,
         "moins d'une heure par jour": 1,
     }
-    data["daily listening frequency"] = data["monthly listening frequency"].replace(freq_jour)
+    data["daily listening frequency"] = data["daily listening frequency"].replace(freq_jour)
 
     # -------------------------------------------------------------
     # Finalisation et export
