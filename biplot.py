@@ -11,7 +11,7 @@ import numpy as np
 
 def biplot(pca=[],x=None,y=None,components=[0,1],score=None,\
            coeff=None,coeff_labels=None,score_labels=None,circle='T',\
-           bigdata=1000,cat=None,cmap="viridis",density=True):
+           bigdata=1000,cat=None,cmap="viridis",density=True,xLabel=None,yLabel=None):
     if isinstance(pca,PCA)==True :
         coeff = np.transpose(pca.components_[components, :])
         score=  pca.fit_transform(x)[:,components]
@@ -101,7 +101,7 @@ def biplot(pca=[],x=None,y=None,components=[0,1],score=None,\
                 plt.text(temp_x,temp_y,list(score_labels)[i])
     plt.xlim(-1.2,1.2)
     plt.ylim(-1.2,1.2)
-    plt.xlabel("PC{}".format(1))
-    plt.ylabel("PC{}".format(2))
+    plt.xlabel(xLabel if xLabel is not None else "PC{}".format(1))
+    plt.ylabel(yLabel if yLabel is not None else "PC{}".format(2))
     plt.grid(linestyle='--')
     plt.show()
